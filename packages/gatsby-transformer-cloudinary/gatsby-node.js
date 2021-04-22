@@ -53,6 +53,27 @@ exports.createSchemaCustomization = ({ actions }) => {
         transformations: [String!]
         ignoreDefaultBase64: Boolean
       ): CloudinaryAssetFluid!
+
+      gatsbyImageData(
+        aspectRatio: Float
+        aviOptions: AviOptions
+        backgroundColor: String
+        blurredOptions: BlurredOptions 
+        breakPoints: Int
+        formats: ToFormat
+        height: Int
+        jpgOptions: JpgOptions
+        layout: Layout
+        outputPixelDensities: Float
+        placeholder: Placeholder
+        pngOptions: PngOptions
+        quality: Int
+        sizes: String
+        tracedSVGOptions: TracedSVGOptions
+        transformOptions: TransformOptions
+        webOptions: WebOptions
+        width: Int
+      )
     }
 
     type CloudinaryAssetFixed {
@@ -74,6 +95,111 @@ exports.createSchemaCustomization = ({ actions }) => {
       src: String!
       srcSet: String!
       tracedSVG: String
+    }
+
+    type AviOptions {
+      lossLess: Boolean
+      quality: Int
+      speed: Int
+    }
+
+    type BlurredOptions {
+      toFormat: ToFormat
+      width: Int
+    }
+
+    type JpgOptions {
+      progressive: Boolean
+      quality: Int
+    }
+
+    type PngOptions {
+      compressionSpeed: Int
+      quality: Int
+    }
+
+    type TracedSVGOptions {
+      alphaMax: Float
+      background: String
+      blackOnWhite: Boolean
+      color: String
+      optCurve: Boolean
+      optTolerance: Float
+      threshold: Int
+      turdSize: float
+      turnPolicy: TurnPolicy
+    }
+
+    type TransformOptions {
+      cropFocus: CropFocus
+      duotone: Duotone
+      fit: Fit
+      grayScale: Boolean
+      rotate: Int
+      trim: Float
+    }
+
+    type Doutone {
+      highlight*: String
+      opacity: Int
+      shadow*: String
+    }
+
+    type WebOptions {
+      quality: Int
+    }
+
+    enum ToFormat {
+      NO_CHANGE
+      AUTO
+      JPG
+      PNG
+      WEBP
+      AVIF
+    }
+
+    enum Layout {
+      FIXED
+      FULL_WIDTH
+      CONSTRAINED
+    }
+
+    enum Placeholder {
+      DOMINANT_COLOR
+      TRACED_SVG
+      BLURRED
+      NONE
+    }
+
+    enum TurnPolicy {
+      TURNPOLICY_BLACK
+      TURNPOLICY_WHITE
+      TURNPOLICY_LEFT
+      TURNPOLICY_RIGHT
+      TURNPOLICY_MINORITY
+      TURNPOLICY_MAJORITY
+    }
+
+    enum CropFocus {
+      CENTER
+      NORTH
+      NORTHEAST
+      EAST
+      SOUTHEAST
+      SOUTH
+      SOUTHWEST
+      WEST
+      NORTHWEST
+      ENTROPY
+      ATTENTION
+    }
+
+    enum Fit {
+      COVER
+      CONTAIN
+      FILL
+      INSIDE
+      OUTSIDE
     }
   `);
 };
@@ -106,7 +232,7 @@ exports.createResolvers = ({ createResolvers, reporter }) => {
           info,
         ) => {
           const fieldsToSelect = info.fieldNodes[0].selectionSet.selections.map(
-            item => item.name.value,
+            (item) => item.name.value,
           );
           return getFixedImageObject({
             base64Transformations,
@@ -153,7 +279,7 @@ exports.createResolvers = ({ createResolvers, reporter }) => {
           info,
         ) => {
           const fieldsToSelect = info.fieldNodes[0].selectionSet.selections.map(
-            item => item.name.value,
+            (item) => item.name.value,
           );
           return getFluidImageObject({
             base64Transformations,
@@ -234,7 +360,11 @@ exports.onCreateNode = async ({
   });
 
   // Create nodes for files to be uploaded to cloudinary
-  if (pluginOptions.apiKey && pluginOptions.apiSecret && pluginOptions.cloudName ){
+  if (
+    pluginOptions.apiKey &&
+    pluginOptions.apiSecret &&
+    pluginOptions.cloudName
+  ) {
     await createAssetNodeFromFile({
       node,
       actions,
